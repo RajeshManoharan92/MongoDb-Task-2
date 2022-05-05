@@ -1,0 +1,147 @@
+//Creating Database.
+
+use Database('Zen')
+
+-------------------------------------------------------------------------------------------
+
+// creating collection
+
+db.createCollection('ZenClass')
+
+-------------------------------------------------------------------------------------------
+
+//creating Documents
+
+db.Zenclass.insertMany([{
+    
+  UserId:1,    
+  Username : 'Ashwin',
+  No_of_codekata_problem_solved : "5" ,
+  Attendance : "Present",
+  Topics:'Js',
+  Task: 'forloop',
+  Task_status:'submitted',
+  company_drives: 'ss',
+  mentor_name: 'aa',
+  mentee_count:'19',
+  Date : new Date("2020-10-10"),
+  month: 'october',
+  Placement_status:'appeared'},
+  
+  {
+  UserId:2,
+  Username : 'Santhosh',
+  No_of_codekata_problem_solved : "5" ,
+  Attendance : "Absent",
+  Topics:'Js',
+  Task: 'forinloop',
+  Task_status:'submitted',
+  company_drives: 'ss',
+  mentor_name: 'aa',
+  mentee_count:'16',
+  Date : new Date("2020-10-20"),
+  month: 'october',
+  Placement_status:'appeared'},
+  
+  {
+  UserId:3, 
+  Username : 'Naveen',
+  No_of_codekata_problem_solved : "5" ,
+  Attendance : "Present",
+  Topics:'Js',
+  Task: 'forofloop',
+  Task_status:'Not-submitted',
+  company_drives: 'ss',
+  mentor_name: 'aa',
+  mentee_count:'18',
+  Date : new Date("2020-10-31"),
+  month: 'october',
+  Placement_status:'appeared'},
+  
+  {
+  UserId:4, 
+  Username : 'Ashok',
+  No_of_codekata_problem_solved : "5" ,
+  Attendance : "Present",
+  Topics:'Js',
+  Task: 'forEachloop',
+  Task_status:'submitted',
+  company_drives: 'ss',
+  mentor_name: 'aa',
+  mentee_count:'10',
+  Date : new Date("2020-10-15"),
+  month: 'November',
+  Placement_status:'Not-appeared'},
+  
+  {
+  UserId:5,
+  Username : 'Gopal',
+  No_of_codekata_problem_solved : "5" ,
+  Attendance : "Absent",
+  Topics:'Js',
+  Task: 'Object',
+  Task_status:'Not-submitted',
+  company_drives: 'ss',
+  mentor_name: 'aa',
+  mentee_count:'9',
+  Date : new Date("2020-10-17"),
+  month: 'December',
+  Placement_status:'Not-appeared'},
+  
+  ])
+
+
+
+
+-------------------------------------------------------------------------------------------
+
+//Find all the topics and tasks which are thought in the month of October
+
+db.Zenclass.find({ month: 'october'}).projection({'Topics':1,'Task':1})
+
+-------------------------------------------------------------------------------------------
+
+//Find all the company drives which appeared between 15 oct-2020 and 31-oct-2020
+
+db.Zenclass.find({$and: [{'Date':{$gte:ISODate("2020-10-15T05:30:00.000+05:30")}}, 
+{'Date':{$lte:ISODate("2020-10-31T05:30:00.000+05:30")} }  ]}).projection({'company_drives':1,'Date':1});
+
+-------------------------------------------------------------------------------------------
+
+//Find all the company drives and students who are appeared for the placement.
+
+db.Zenclass.find({"Placement_status" : "appeared"}).projection({'company_drives':1,"Placement_status":1})
+
+-------------------------------------------------------------------------------------------
+
+//Find the number of problems solved by the user in codekata
+
+db.Zenclass.find({'Username': 'Ashok'}).projection({"Username":1 , "No_of_codekata_problem_solved":1})
+
+--------------------------------------------------------------------------------------------
+
+//Find all the mentors with who has the mentee's count more than 15
+
+db.Zenclass.find({'mentee_count': {$gte:15}}).projection({'mentor_name':1,'mentee_count':1})
+
+---------------------------------------------------------------------------------------------
+
+//Find the number of users who are absent and task is not submitted  between 15 oct-2020 and 31-oct-2020
+
+db.Zenclass.aggregate([
+    
+{
+    $match: {
+          'Attendance' : 'Absent' ,
+          'Task_status':'Not-submitted',
+         'Date': {$gte: ISODate("2020-10-15T05:30:00.000+05:30"),$lt: ISODate("2020-10-31T05:30:00.000+05:30")}
+             },
+},
+    
+    {
+     $project: {
+        'Username':1,
+        "UserId":1
+          }
+     },
+])      
